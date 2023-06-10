@@ -9,10 +9,11 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
-import BoardUser from "./components/BoardUser";
+// import BoardUser from "./components/BoardUser";
 import CoursesList from "./components/CoursesList";
 import AddCourse from "./components/AddCourse";
 import Course from "./components/Course";
+import AddLect from "./components/AddLecture";
 
 import EventBus from "./common/EventBus";
 
@@ -124,6 +125,7 @@ const App = () => {
           {/* <Route path="/user" element={<BoardUser/>} /> */}
           <Route path="/courses" element={<CoursesList/>} />
           <Route path="/courses/add" element={<AddCourse/>} />
+          <Route path="/lects/:course_id" element={<AddLect/>} />
           <Route path="/courses/:id" element={<Course/>} />
         </Routes>
       </div>

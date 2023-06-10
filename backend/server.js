@@ -5,7 +5,7 @@ const dbConfig = require("./app/config/db.config");
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:3000"
+  origin: "http://192.168.51.78:3000"
 };
 
 app.use(cors(corsOptions));
@@ -26,7 +26,7 @@ db.mongoose
   })
   .then(() => {
     console.log("Successfully connect to MongoDB.");
-    initial();
+    
   })
   .catch(err => {
     console.error("Connection error", err);
@@ -43,6 +43,8 @@ require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/course.routes")(app);
 require("./app/routes/subs.routes")(app);
+require("./app/routes/lect.routes")(app);
+
 
 // set port, listen for requests
 const PORT = 5000;

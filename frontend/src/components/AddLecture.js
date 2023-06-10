@@ -1,11 +1,15 @@
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CourseService from "../services/course.service";
+import { useNavigate, useParams } from "react-router-dom";
+import LectService from "../services/lect.service";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 
 
-const AddCourse = () => {
+const AddLect = () => {
+    const course = useParams();
+    console.log(course);
+    const course_id = course.course_id;
+    console.log(course_id);
   const form = useRef();
   const required = (value) => {
     if (!value) {
@@ -17,48 +21,45 @@ const AddCourse = () => {
     }
   };
   const navigate = useNavigate();
-  const initialCourseState = {
-    id: null,
-    title: "",
-    description: "",
-    instructor: "",
-    published: false
+  const initialLectState = {
+    course_id:course_id,
+    title:"",
+    link:""
   };
-  const [course, setCourse] = useState(initialCourseState);
+  const [lect, setLect] = useState(initialLectState);
   const [submitted, setSubmitted] = useState(false);
 
   const handleInputChange = event => {
     const { name, value } = event.target;
-    setCourse({ ...course, [name]: value });
+    setLect({ ...lect, [name]: value });
   };
 
-  const saveCourse = () => {
+  const saveLect = () => {
     var data = {
-      title: course.title,
-      description: course.description,
-      instructor: course.instructor
+      title: lect.title,
+      course_id: lect.course_id,
+      link: lect.link
     };
 
-    CourseService.createCourse(data)
+    LectService.createLect(data)
       .then(response => {
-        setCourse({
-          id: response.data.id,
+        setLect({
           title: response.data.title,
-          description: response.data.description,
-          instructor: response.data.instructor,
-          published: response.data.published
+          course_id: response.data.course_id,
+          link: response.data.link
         });
-        
+        setSubmitted(true);
         console.log(response.data);
       })
       .catch(e => {
         console.log(e);
       });
+
       setSubmitted(true);
   };
 
-  const newCourse = () => {
-    setCourse(initialCourseState);
+  const newLect = () => {
+    setLect(initialLectState);
     setSubmitted(false);
   };
 
@@ -67,7 +68,7 @@ const AddCourse = () => {
       {submitted ? (
         <div>
           <h4>You submitted successfully!</h4>
-          <button className="m-3 btn btn-sm btn-success" onClick={() => {newCourse()}}>
+          <button className="m-3 btn btn-sm btn-success" onClick={newLect}>
             Add
           </button>
           
@@ -77,7 +78,8 @@ const AddCourse = () => {
           
         </div>
       ) : (
-        <Form onSubmit={saveCourse} ref={form}>
+        <Form onSubmit={saveLect} ref={form}>
+            <h1>{course_id}</h1>
           <div className="form-group">
             <label htmlFor="title">Title</label>
             <Input
@@ -85,7 +87,7 @@ const AddCourse = () => {
               className="form-control"
               id="title"
               required
-              value={course.title}
+              value={lect.title}
               onChange={handleInputChange}
               name="title"
               validations={[required]}
@@ -93,34 +95,20 @@ const AddCourse = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Description</label>
+            <label htmlFor="link">Link</label>
             <Input
-              type="text"
+              type="url"
               className="form-control"
-              id="description"
+              id="link"
               required
-              value={course.description}
+              value={lect.link}
               onChange={handleInputChange}
-              name="description"
+              name="link"
               validations={[required]}
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="instructor">Instructor</label>
-            <Input
-              type="text"
-              className="form-control"
-              id="instructor"
-              required
-              value={course.instructor}
-              onChange={handleInputChange}
-              name="instructor"
-              validations={[required]}
-            />
-          </div>
-
-          <button className="btn btn-success">
+          <button type='submit' className="btn btn-success">
             Submit
           </button>
         </Form>
@@ -129,4 +117,4 @@ const AddCourse = () => {
   );
 };
 
-export default AddCourse;
+export default AddLect;

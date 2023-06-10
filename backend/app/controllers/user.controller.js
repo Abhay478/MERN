@@ -25,13 +25,13 @@ exports.userBoard = (req, res) =>
 //   });
 // };
 
-exports.adminBoard = (req, res) => {
-  res.status(200).send("Admin Content.");
-};
+// exports.adminBoard = (req, res) => {
+//   res.status(200).send("Admin Content.");
+// };
 
-exports.moderatorBoard = (req, res) => {
-  res.status(200).send("Moderator Content.");
-};
+// exports.moderatorBoard = (req, res) => {
+//   res.status(200).send("Moderator Content.");
+// };
 
 /*
 If student : 
@@ -47,3 +47,4 @@ If instructor:
     Delete : terminates the course.
     Show all courses <--> Show my courses (default)
 */
+

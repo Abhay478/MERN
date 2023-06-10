@@ -29,25 +29,9 @@ const Course = props => {
   const [currentUser, setcurrentUser] = useState(AuthService.getCurrentUser());
   const [sub, updateSub] = useState(false);
   const [currentSub, setCurrentSub] = useState(currentUser.username && currentCourse.title ? SubService.getUserSubByID(currentUser.username, currentCourse.title)
-  // .then(response => {
-  //   // console.log(currentUser.username);
-  //   // console.log(currentCourse !== undefined? currentCourse.id : "Barthilla.");
-  //   setCurrentSub(response.data[0]);
-  //   updateSub(response.data.length > 0)
-  //   // console.log(currentSub.score);
-  // })
-  // .catch(e => {
-  //   console.log(e);
-  // }) 
   : initialSubState);
   const [students, setStudents] = useState([])
   const [currentStudentIndex, setStudentIndex] = useState(-1);
-  // const [grade, setGrade] = useState({
-  //   score : "",
-  //   grade : ""
-  // });
-
-  // const [currentStudent, setCurrentStudent] = useState(initialSubState);
 
   const [result, setResult] = useState({
     score:"",
@@ -113,11 +97,6 @@ const Course = props => {
     
   }, [id]);
 
-  // useEffect(() => {
-  //   let ignore = false;
-  //   setTimeout(() => {if(!ignore){getSub();}}, 10)
-  //  return () => ignore = true}, [])
-
   const handleInputChange = event => {
     getSub();
     if(currentUser.authority === "Student"){
@@ -127,53 +106,23 @@ const Course = props => {
     setCurrentCourse({ ...currentCourse, [name]: value });
   };
 
-  const updatePublished = status => {
-    var data = {
-      id: currentCourse.id,
-      title: currentCourse.title,
-      description: currentCourse.description,
-      instructor: currentCourse.instructor,
-      published: status
-    };
-
-    CourseDataService.updateCourse(currentCourse.id, data)
-      .then(response => {
-        setCurrentCourse({ ...currentCourse, published: status });
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
-
   const updateCourse = () => {
     CourseDataService.updateCourse(currentCourse.id, currentCourse)
       .then(response => {
         console.log(response.data);
-        setMessage("The tutorial was updated successfully!");
+        setMessage("The course was updated successfully!");
       })
       .catch(e => {
         console.log(e);
       });
   };
 
-//   const handleEval = (e) => {
-//     getStudents();
-//     console.log(currentStudent);
-//     const { name, value } = e.target;
-//     setCurrentStudent({ user_id: students[currentStudentIndex].username, course_id: currentCourse.title, [name]: value });
-// }
-
-//   const handleGrading = (event) => {
-//     event.preventDefault();
-//     SubService.gradeStudent(currentStudent._id, {score: currentStudent.score, grade : currentStudent.grade})
-//   }
 
   const deleteCourse = () => {
     CourseDataService.removeCourse(currentCourse.id)
       .then(response => {
         console.log(response.data);
-        navigate("/tutorials");
+        navigate("/courses");
       })
       .catch(e => {
         console.log(e);
@@ -201,14 +150,12 @@ const Course = props => {
     .catch(e => {
       console.log(e);
     });
-    }
+  }
+
+  
   return (
     <div>
-    {/* {useEffect(() => {
-      let ignore = false;
-      setTimeout(() => {if(!ignore){getSub();}}, 10)
-      return () => ignore = true}, [])} */}
-
+    
       {currentCourse ? (
         <div className="edit-form">
           {/* {console.log(currentCourse.id)} */}
@@ -249,13 +196,6 @@ const Course = props => {
               />
             </div>
 
-            {/* {currentUser.authority === "Instructor" && (<div className="form-group">
-              <label>
-                <strong>Status:</strong>
-              </label>
-              {currentCourse.published ? "Published" : "Pending"} 
-            </div>)}*/}
-
             {sub && (<div>
             {currentUser.authority === "Student" && (
               <div>
@@ -287,21 +227,6 @@ const Course = props => {
           </form>
 {/* instructor buttons */}
           {currentUser.authority === "Instructor" && (<div>
-          {/* {currentCourse.published ? (
-            <button
-              className="badge badge-primary mr-2"
-              onClick={() => updatePublished(false)}
-            >
-              UnPublish
-            </button>
-          ) : (
-            <button
-              className="badge badge-primary mr-2"
-              onClick={() => updatePublished(true)}
-            >
-              Publish
-            </button>
-          )} */}
 
           <button className="btn btn-danger m-2" onClick={deleteCourse}>
             Delete
@@ -334,14 +259,15 @@ const Course = props => {
                 key={index}>
                     {student.user_id} : {student.score} : {student.grade}
                     
-                    {(index === currentStudentIndex) && (<form>
+                    {(index === currentStudentIndex) && (
+                      <form>
                     <label htmlFor="score">Score</label>
                       <input
                       type="text"
                       className="form-control"
                       id="score"
                       name="score"
-                      // value={currentStudent.score}
+                      value={result.score}
                       onChange={(e) => setResult(prev => {
                         return {...prev, [e.target.name] : e.target.value}})}
                       />
@@ -351,7 +277,7 @@ const Course = props => {
                       className="form-control"
                       id="grade"
                       name="grade"
-                      // value={currentStudent.grade}
+                      value={result.grade}
                       onChange={(e) => setResult(prev => {
                         return {...prev, [e.target.name] : e.target.value}})}
                       />

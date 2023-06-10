@@ -1,7 +1,7 @@
 import axios from "axios";
 import AuthService from "./auth.service";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "http://192.168.51.78:5000/api";
 const user = AuthService.getCurrentUser();
 
 const getAllCourses = () => {

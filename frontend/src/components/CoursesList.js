@@ -3,6 +3,7 @@ import CourseService from "../services/course.service";
 import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../services/auth.service";
 import SubService from "../services/subs.service";
+import LectService from "../services/lect.service";
 
 const CoursesList = () => {
   const [courses, setCourses] = useState([]);
@@ -12,15 +13,15 @@ const CoursesList = () => {
   const [currentUser, setCurrentUser] = useState(AuthService.getCurrentUser());
   const [viewAll, setViewAll] = useState(false);
   const [subs, setSubs] = useState([]);
- // const [currentSub, setCurrentSub] = useState();
+  const [lects, setLects] = useState([]);
 
   useEffect(() => {
-    retrieveCourses();
-    retrieveSubs();
+    // retrieveCourses();
+    // retrieveSubs();
+    refreshList();
   }, []);
 
-  //We need to add functionality to alternatively display "Subscribe" or "Unsubscribe" in each course 
-  // based on the value of "subs"
+  
 
   const retrieveSubs = () => {
     SubService.getAllSubs()
@@ -59,8 +60,24 @@ const CoursesList = () => {
       });
   };
 
+  const retrieveLects = () => {
+    LectService.getAllLects(currentCourse.title)
+      .then(response => {
+        setLects(response.data);
+        console.log(response.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
+  const addLect = () => {
+    navigate('/lects/' + currentCourse.title);
+  }
+
   const refreshList = () => {
     retrieveCourses();
+    retrieveSubs();
     setCurrentCourse(null);
     setCurrentIndex(-1);
   };
@@ -71,17 +88,6 @@ const CoursesList = () => {
     console.log(currentCourse);
     console.log(currentIndex);
     //setCurrentSub(() => subs.find((sub) => {sub.course_id === course.title}))
-  };
-
-  const removeAllCourses = () => {
-    CourseService.removeAllCourses()
-      .then(response => {
-        console.log(response.data);
-        refreshList();
-      })
-      .catch(e => {
-        console.log(e);
-      });
   };
 
   const addCourse = () => {
@@ -150,13 +156,6 @@ const CoursesList = () => {
             ))}
         </ul>
 
-        {/* <button
-          className="m-3 btn btn-sm btn-danger"
-          onClick={removeAllCourses}
-        >
-          Remove All
-        </button> */}
-
         {currentUser.authority === "Instructor" && (<button
           className="m-3 btn btn-sm btn-success"
           onClick={addCourse}
@@ -166,7 +165,7 @@ const CoursesList = () => {
 
       </div>
 )}
-      {!viewAll && (<div className="col-md-5">
+      {!viewAll && (<div className="col-md-8">
         {currentCourse ? (
           <div>
             <h4>Course</h4>
@@ -188,16 +187,47 @@ const CoursesList = () => {
               </label>{" "}
               {currentCourse.instructor}
             </div>
-            <div>
+            {/* <div>
               <label>
                 <strong>Status:</strong>
               </label>{" "}
               {currentCourse.published ? "Published" : "Pending"}
-            </div>
+            </div> */}
+
+          {lects.length === 0 && (
+            <button className="badge badge-success m-2 mr-3" onClick={retrieveLects}>
+              Show Lectures
+            </button>
+          )}
+
+          {lects.length > 0 &&(<strong>Lectures</strong>)}
+          {console.log(lects)}
+          <ul className="list-group">
+          {lects &&
+            (lects.map(lect => (
+              <li
+                // className={
+                //   "list-group-item "
+                // }
+              >
+              {console.log(lect.title)}
+                {lect.title} : <a href={lect.link} className="badge badge-info">Watch.</a>
+              </li>
+            ))
+            )}
+          </ul>
+          {lects.length > 0 && (
+            <button className="badge badge-info" onClick={() => setLects([])}>
+              Hide lectures
+            </button>
+          )}
+          <button className="badge badge-warning m-2 mr-3" onClick={addLect}>
+            Add lecture
+          </button>
 
             <Link
               to={"/courses/" + currentCourse.id}
-              className="badge badge-warning"
+              className="badge badge-warning m-2 mr-3"
             >
               Show detail
             </Link>
@@ -219,10 +249,7 @@ const CoursesList = () => {
               <li
                 className={
                   "list-group-item "
-                  //  + (index === currentIndex ? "active" : "")
                 }
-                // onClick={() => setActiveCourse(course, index)}
-                // key={index}
               >
                 {course.title} : {course.description} : {course.instructor}
               </li>
@@ -235,20 +262,6 @@ const CoursesList = () => {
         >
           My courses
         </button>
-
-        {/* <button
-          className="m-3 btn btn-sm btn-danger"
-          onClick={removeAllCourses}
-        >
-          Remove All
-        </button>
-
-        {currentUser.authority === "Instructor" && (<button
-          className="m-3 btn btn-sm btn-success"
-          onClick={addCourse}
-        >
-          Add Course
-        </button>)} */}
 
       </div>)}
       </div>)
@@ -290,12 +303,6 @@ const CoursesList = () => {
             ))} */}
         </ul>
 
-        {/* <button
-          className="m-3 btn btn-sm btn-danger"
-          onClick={removeAllCourses}
-        >
-          Remove All
-        </button> */}
 
       </div>
         )}
@@ -333,8 +340,8 @@ const CoursesList = () => {
       <div className="col-md-6">
         {currentCourse ? (
           <div>
-          {console.log("In the individual course.")}
-            {/* <h4>Course</h4>
+          {console.log("In the inal course.")}
+            <h4>Course</h4>
             <div>
               <label>
                 <strong>Title:</strong>
@@ -353,14 +360,36 @@ const CoursesList = () => {
               </label>{" "}
               {currentCourse.instructor}
             </div>
-            <div>
-              <label>
-                <strong>Score:</strong>
-              </label>{" "}
 
-              {console.log("Hello.")}
+          {!viewAll &&(<div>
+          {lects.length === 0 && (
+            <button className="badge badge-success m-2 mr-3" onClick={retrieveLects}>
+              Show Lectures
+            </button>
+          )}
 
-            </div> */}
+          {lects.length > 0 &&(<strong>Lectures</strong>)}
+          {console.log(lects)}
+          <ul className="list-group">
+          {lects &&
+            (lects.map(lect => (
+              <li
+                // className={
+                //   "list-group-item "
+                // }
+              >
+              {console.log(lect.title)}
+                {lect.title} : <a href={lect.link} className="badge badge-info">Watch.</a>
+              </li>
+            ))
+            )}
+          </ul>
+          {lects.length > 0 && (
+            <button className="badge badge-info" onClick={() => setLects([])}>
+              Hide lectures
+            </button>
+          )}
+          </div>)}
 
             <Link
               to={"/courses/" + currentCourse.id}
